@@ -1,19 +1,9 @@
-//! Display graphics and text on the badger2040 e-ink display
+// Display graphics and text on the badger2040 e-ink display
 #![no_std]
 #![no_main]
 
 use bsp::entry;
-use embedded_hal::digital::OutputPin;
-use panic_halt as _;
-
 use bsp::hal;
-use fugit::RateExtU32;
-use hal::pac;
-use hal::{clocks::Clock, Timer};
-use pimoroni_badger2040 as bsp;
-
-use embedded_hal_bus::spi::ExclusiveDevice;
-
 use embedded_graphics::{
     image::Image,
     mono_font::{ascii::*, MonoTextStyle},
@@ -21,11 +11,18 @@ use embedded_graphics::{
     prelude::*,
     primitives::{PrimitiveStyle, Rectangle},
 };
+use embedded_hal::digital::OutputPin;
+use embedded_hal_bus::spi::ExclusiveDevice;
 use embedded_text::{
     alignment::HorizontalAlignment,
     style::{HeightMode, TextBoxStyleBuilder},
     TextBox,
 };
+use fugit::RateExtU32;
+use hal::pac;
+use hal::{clocks::Clock, Timer};
+use panic_halt as _;
+use pimoroni_badger2040 as bsp;
 use tinybmp::Bmp;
 use uc8151::blocking::Uc8151;
 use uc8151::WIDTH;
