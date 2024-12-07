@@ -32,6 +32,7 @@ use uc8151::LUT;
 use uc8151::WIDTH;
 use {defmt_rtt as _, panic_probe as _};
 static FERRIS_IMG: &[u8; 2622] = include_bytes!("../ferris_1bpp.bmp");
+
 #[cortex_m_rt::pre_init]
 unsafe fn before_main() {
     // Soft-reset doesn't clear spinlocks. Clear the one used by critical-section
