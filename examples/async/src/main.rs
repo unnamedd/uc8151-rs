@@ -3,16 +3,13 @@
 
 use defmt::*;
 use embassy_embedded_hal::shared_bus::asynch::spi::SpiDevice;
-
 use embassy_executor::Spawner;
-use embassy_rp::gpio;
-use embassy_rp::gpio::Input;
-use embassy_rp::spi;
-use embassy_rp::spi::Spi;
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::mutex::Mutex;
-use embassy_time::Delay;
-use embassy_time::{Duration, Timer};
+use embassy_rp::{
+    gpio::{self, Input},
+    spi::{self, Spi},
+};
+use embassy_sync::{blocking_mutex::raw::NoopRawMutex, mutex::Mutex};
+use embassy_time::{Delay, Duration, Timer};
 use embedded_graphics::{
     image::Image,
     mono_font::{ascii::*, MonoTextStyle},
@@ -27,11 +24,8 @@ use embedded_text::{
 };
 use gpio::{Level, Output, Pull};
 use tinybmp::Bmp;
-use uc8151::asynch::Uc8151;
-use uc8151::LUT;
-use uc8151::WIDTH;
+use uc8151::{asynch::Uc8151, LUT, WIDTH};
 use {defmt_rtt as _, panic_probe as _};
-static FERRIS_IMG: &[u8; 2622] = include_bytes!("../ferris_1bpp.bmp");
 
 #[cortex_m_rt::pre_init]
 unsafe fn before_main() {
@@ -39,6 +33,7 @@ unsafe fn before_main() {
     // before we hit main to avoid deadlocks when using a debugger
     embassy_rp::pac::SIO.spinlock(31).write_value(1);
 }
+static FERRIS_IMG: &[u8; 2622] = include_bytes!("../ferris_1bpp.bmp");
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
