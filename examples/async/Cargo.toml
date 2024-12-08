@@ -37,7 +37,7 @@ embedded-text = "0.7.2"
 panic-probe = { version = "0.3", features = ["print-defmt"] }
 portable-atomic = { version = "1.10.0", features = ["critical-section"] }
 tinybmp = "0.6.0"
-uc8151 = { path = "../../" }
+uc8151 = { path = "../../", features = ["graphics"] }
 
 # cargo build/run
 [profile.dev]
