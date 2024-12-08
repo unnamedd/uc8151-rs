@@ -3,16 +3,13 @@
 
 use defmt::*;
 use embassy_embedded_hal::shared_bus::asynch::spi::SpiDevice;
-
 use embassy_executor::Spawner;
-use embassy_rp::gpio;
-use embassy_rp::gpio::Input;
-use embassy_rp::spi;
-use embassy_rp::spi::Spi;
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::mutex::Mutex;
-use embassy_time::Delay;
-use embassy_time::{Duration, Timer};
+use embassy_rp::{
+    gpio::{self, Input},
+    spi::{self, Spi},
+};
+use embassy_sync::{blocking_mutex::raw::NoopRawMutex, mutex::Mutex};
+use embassy_time::{Delay, Duration, Timer};
 use embedded_graphics::{
     image::Image,
     mono_font::{ascii::*, MonoTextStyle},
@@ -20,7 +17,6 @@ use embedded_graphics::{
     prelude::*,
     primitives::{PrimitiveStyle, Rectangle},
 };
-use embedded_hal_bus::spi::ExclusiveDevice;
 use embedded_text::{
     alignment::HorizontalAlignment,
     style::{HeightMode, TextBoxStyleBuilder},
@@ -28,27 +24,22 @@ use embedded_text::{
 };
 use gpio::{Level, Output, Pull};
 use tinybmp::Bmp;
-use uc8151::asynch::Uc8151;
-use uc8151::LUT;
-use uc8151::WIDTH;
+use uc8151::{asynch::Uc8151, LUT, WIDTH};
 use {defmt_rtt as _, panic_probe as _};
+
 static FERRIS_IMG: &[u8; 2622] = include_bytes!("../ferris_1bpp.bmp");
-#[cortex_m_rt::pre_init]
-unsafe fn before_main() {
-    // Soft-reset doesn't clear spinlocks. Clear the one used by critical-section
-    // before we hit main to avoid deadlocks when using a debugger
-    embassy_rp::pac::SIO.spinlock(31).write_value(1);
-}
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
+    embassy_rp::pac::SIO.spinlock(31).write_value(1);
+
     info!("Program start");
     let p = embassy_rp::init(Default::default());
     let miso = p.PIN_16;
     let mosi = p.PIN_19;
     let clk = p.PIN_18;
-    let mut dc = p.PIN_20;
-    let mut cs = p.PIN_17;
+    let dc = p.PIN_20;
+    let cs = p.PIN_17;
     let busy = p.PIN_26;
     let reset = p.PIN_21;
     let power = p.PIN_10;
@@ -62,18 +53,18 @@ async fn main(_spawner: Spawner) {
     let led = p.PIN_25;
 
     let reset = Output::new(reset, Level::Low);
-    let power = Output::new(power, Level::Low);
+    let _power = Output::new(power, Level::Low);
 
     let dc = Output::new(dc, Level::Low);
     let cs = Output::new(cs, Level::High);
-    let mut busy = Input::new(busy, Pull::Up);
+    let busy = Input::new(busy, Pull::Up);
 
     let mut led = Output::new(led, Level::Low);
-    let mut btn_up = Input::new(btn_up, Pull::Up);
-    let mut btn_down = Input::new(btn_down, Pull::Up);
-    let mut btn_a = Input::new(btn_a, Pull::Up);
-    let mut btn_b = Input::new(btn_b, Pull::Up);
-    let mut btn_c = Input::new(btn_c, Pull::Up);
+    let _btn_up = Input::new(btn_up, Pull::Up);
+    let _btn_down = Input::new(btn_down, Pull::Up);
+    let _btn_a = Input::new(btn_a, Pull::Up);
+    let _btn_b = Input::new(btn_b, Pull::Up);
+    let _btn_c = Input::new(btn_c, Pull::Up);
 
     let spi = Spi::new(
         p.SPI0,
